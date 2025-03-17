@@ -91,6 +91,7 @@ async function loadFiles() {
         }
     } catch (error) {
         console.error('Error loading files:', error);
+        fileList.innerHTML = '<div class="error">Error loading files. Please try again later.</div>';
     }
 }
 
