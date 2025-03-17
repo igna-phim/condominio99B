@@ -165,19 +165,17 @@ async function showFilePreview(item) {
     previewContainer.innerHTML = '';
     
     if (extension === 'pdf') {
-        // Create a wrapper for the PDF viewer
+        // Create wrapper for PDF viewer
         const previewWrapper = document.createElement('div');
         previewWrapper.className = 'pdf-preview-wrapper';
         
-        // On mobile, use the browser's built-in PDF viewer
+        // Create PDF viewer iframe
+        const iframe = document.createElement('iframe');
+        iframe.className = 'pdf-preview';
+        iframe.src = url;
+        
+        // Add download button only on mobile
         if (window.innerWidth <= 768) {
-            const pdfViewer = document.createElement('object');
-            pdfViewer.className = 'pdf-preview';
-            pdfViewer.type = 'application/pdf';
-            pdfViewer.data = url;
-            previewWrapper.appendChild(pdfViewer);
-        } else {
-            // On desktop, keep the iframe with download button
             const downloadButton = document.createElement('a');
             downloadButton.href = url;
             downloadButton.download = item.name;
@@ -188,15 +186,10 @@ async function showFilePreview(item) {
                 </svg>
                 Abrir PDF
             `;
-            
-            const iframe = document.createElement('iframe');
-            iframe.className = 'pdf-preview';
-            iframe.src = url;
-            
             previewWrapper.appendChild(downloadButton);
-            previewWrapper.appendChild(iframe);
         }
         
+        previewWrapper.appendChild(iframe);
         previewContainer.appendChild(previewWrapper);
     } else if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
         const img = document.createElement('img');
