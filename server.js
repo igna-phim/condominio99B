@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Enable CORS
 app.use(cors());
@@ -17,7 +17,7 @@ app.use(cors());
 app.use('/documents', express.static(path.join(__dirname, 'public/documents')));
 
 // Endpoint to get list of files
-app.get('/documents', (req, res) => {
+app.get('/api/documents', (req, res) => {
   const documentsPath = path.join(__dirname, 'public/documents');
   
   fs.readdir(documentsPath, (err, files) => {
@@ -36,6 +36,11 @@ app.get('/documents', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-}); 
+// For Vercel deployment
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app; 

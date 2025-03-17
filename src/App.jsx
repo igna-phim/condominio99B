@@ -16,13 +16,14 @@ const NotionFileViewer = () => {
   useEffect(() => {
     const loadInitialFiles = async () => {
       try {
-        const response = await fetch('http://localhost:3001/documents');
+        const baseUrl = import.meta.env.PROD ? '' : 'http://localhost:3001';
+        const response = await fetch(`${baseUrl}/api/documents`);
         const fileList = await response.json();
         
         // Convert file list to File objects
         const fileObjects = await Promise.all(
           fileList.map(async (fileName) => {
-            const response = await fetch(`http://localhost:3001/documents/${fileName}`);
+            const response = await fetch(`${baseUrl}/documents/${fileName}`);
             const blob = await response.blob();
             return new File([blob], fileName, { type: blob.type });
           })
