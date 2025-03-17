@@ -29,8 +29,8 @@ function toggleTheme() {
     setTheme(newTheme);
 }
 
-// Initialize theme
-const savedTheme = localStorage.getItem('theme') || 'light';
+// Initialize theme with dark mode as default
+const savedTheme = localStorage.getItem('theme') || 'dark';
 setTheme(savedTheme);
 
 // Theme toggle event listener
