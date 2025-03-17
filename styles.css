@@ -125,11 +125,21 @@ header {
     background-color: var(--bg-white);
     border-radius: 0.375rem;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
 }
 
 .file-item:hover {
     background-color: var(--hover-color);
+}
+
+.file-item[data-type="folder"]:hover {
+    transform: translateX(2px);
+}
+
+.file-item[data-type="folder"]:active {
+    transform: translateX(4px);
 }
 
 .file-item.active {
@@ -146,12 +156,51 @@ header {
     justify-content: center;
     margin-right: 0.75rem;
     flex-shrink: 0;
+    transition: all 0.2s ease;
 }
 
-.file-icon span {
-    font-size: 0.75rem;
-    font-weight: bold;
+.file-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
     color: var(--text-tertiary);
+}
+
+.folder-icon {
+    color: #3b82f6;
+    transition: color 0.2s ease;
+}
+
+.file-item[data-type="folder"]:hover .folder-icon {
+    color: #60a5fa;
+    transform: scale(1.1);
+}
+
+.folder-toggle {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+    color: var(--text-tertiary);
+    transition: transform 0.2s ease;
+    pointer-events: none;
+}
+
+.folder-toggle.collapsed {
+    transform: rotate(-90deg);
+}
+
+.folder-content {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-left: 1px solid var(--border-color);
+    padding-left: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.folder-content.collapsed {
+    display: none;
 }
 
 .file-info {

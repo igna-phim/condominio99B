@@ -57,6 +57,7 @@ if (window.innerWidth <= 768) {
 
 // File handling functions
 function formatFileSize(bytes) {
+    if (!bytes) return '';
     if (bytes < 1024) return bytes + ' B';
     else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
     else return (bytes / 1048576).toFixed(1) + ' MB';
@@ -66,26 +67,87 @@ function getFileExtension(filename) {
     return filename.split('.').pop().toLowerCase();
 }
 
-function createFileElement(file) {
-    const div = document.createElement('div');
-    div.className = 'file-item';
-    const extension = getFileExtension(file.name);
-    
-    div.innerHTML = `
-        <div class="file-icon">
-            <span>${extension.toUpperCase()}</span>
-        </div>
-        <div class="file-info">
-            <div class="file-name">${file.name}</div>
-            <div class="file-size">${formatFileSize(file.size)}</div>
-        </div>
-    `;
-    
-    div.addEventListener('click', () => showFilePreview(file));
-    return div;
+function createFolderIcon() {
+    return `<svg class="folder-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+    </svg>`;
 }
 
-function showFilePreview(file) {
+function createFileIcon(extension) {
+    return `<svg viewBox="0 0 20 20" fill="currentColor">
+        <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
+        <text x="50%" y="75%" text-anchor="middle" font-size="6" fill="currentColor">${extension.toUpperCase()}</text>
+    </svg>`;
+}
+
+function createFolderToggle() {
+    return `<svg class="folder-toggle" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+    </svg>`;
+}
+
+function createFileElement(item) {
+    const div = document.createElement('div');
+    div.className = 'file-item';
+    
+    if (item.type === 'folder') {
+        div.setAttribute('data-type', 'folder');
+        const folderContent = document.createElement('div');
+        folderContent.className = 'folder-content';
+        
+        div.innerHTML = `
+            ${createFolderToggle()}
+            <div class="file-icon">
+                ${createFolderIcon()}
+            </div>
+            <div class="file-info">
+                <div class="file-name">${item.name}</div>
+            </div>
+        `;
+        
+        const toggle = div.querySelector('.folder-toggle');
+        
+        // Function to toggle folder
+        const toggleFolder = (e) => {
+            e.stopPropagation();
+            toggle.classList.toggle('collapsed');
+            folderContent.classList.toggle('collapsed');
+        };
+        
+        // Make the entire folder div clickable
+        div.addEventListener('click', toggleFolder);
+        
+        // Recursively create elements for folder contents
+        if (item.children) {
+            item.children.forEach(child => {
+                folderContent.appendChild(createFileElement(child));
+            });
+        }
+        
+        const container = document.createElement('div');
+        container.appendChild(div);
+        container.appendChild(folderContent);
+        return container;
+    } else {
+        div.setAttribute('data-type', 'file');
+        const extension = getFileExtension(item.name);
+        
+        div.innerHTML = `
+            <div class="file-icon">
+                ${createFileIcon(extension)}
+            </div>
+            <div class="file-info">
+                <div class="file-name">${item.name}</div>
+                <div class="file-size">${formatFileSize(item.size)}</div>
+            </div>
+        `;
+        
+        div.addEventListener('click', () => showFilePreview(item));
+        return div;
+    }
+}
+
+async function showFilePreview(item) {
     // Remove active class from all file items
     document.querySelectorAll('.file-item').forEach(item => {
         item.classList.remove('active');
@@ -94,8 +156,10 @@ function showFilePreview(file) {
     // Add active class to clicked item
     event.currentTarget.classList.add('active');
     
-    const extension = getFileExtension(file.name);
-    const url = URL.createObjectURL(file);
+    const extension = getFileExtension(item.name);
+    const fileResponse = await fetch(`/documents/${item.path}`);
+    const blob = await fileResponse.blob();
+    const url = URL.createObjectURL(blob);
     
     // Clear previous preview
     previewContainer.innerHTML = '';
@@ -109,7 +173,7 @@ function showFilePreview(file) {
         const img = document.createElement('img');
         img.className = 'image-preview';
         img.src = url;
-        img.alt = file.name;
+        img.alt = item.name;
         previewContainer.appendChild(img);
     } else if (['txt', 'md', 'js', 'html', 'css'].includes(extension)) {
         const pre = document.createElement('pre');
@@ -119,7 +183,7 @@ function showFilePreview(file) {
         reader.onload = (e) => {
             pre.textContent = e.target.result;
         };
-        reader.readAsText(file);
+        reader.readAsText(blob);
         
         previewContainer.appendChild(pre);
     }
@@ -129,19 +193,15 @@ function showFilePreview(file) {
 async function loadFiles() {
     try {
         const response = await fetch('/documents');
-        const files = await response.json();
+        const items = await response.json();
         
         // Clear file list
         fileList.innerHTML = '';
         
         // Create file elements
-        for (const fileName of files) {
-            const fileResponse = await fetch(`/documents/${fileName}`);
-            const blob = await fileResponse.blob();
-            const file = new File([blob], fileName, { type: blob.type });
-            const fileElement = createFileElement(file);
-            fileList.appendChild(fileElement);
-        }
+        items.forEach(item => {
+            fileList.appendChild(createFileElement(item));
+        });
     } catch (error) {
         console.error('Error loading files:', error);
         fileList.innerHTML = '<div class="error">Error loading files. Please try again later.</div>';
