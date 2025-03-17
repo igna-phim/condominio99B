@@ -8,6 +8,9 @@
     --border-color: #e5e7eb;
     --hover-color: #f3f4f6;
     --active-color: #e5e7eb;
+    --accent-color: #3b82f6;
+    --accent-hover-color: #2563eb;
+    --accent-text: #ffffff;
 }
 
 [data-theme="dark"] {
@@ -20,6 +23,9 @@
     --border-color: #4b5563;
     --hover-color: #374151;
     --active-color: #4b5563;
+    --accent-color: #60a5fa;
+    --accent-hover-color: #3b82f6;
+    --accent-text: #f3f4f6;
 }
 
 * {
@@ -254,7 +260,49 @@ header {
     margin-bottom: 0.5rem;
 }
 
+.pdf-preview-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-white);
+}
+
+.download-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--accent-color);
+    color: var(--accent-text);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    margin: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.download-button:hover {
+    background-color: var(--accent-hover-color);
+    transform: translateY(-1px);
+}
+
+.download-button:active {
+    transform: translateY(0);
+}
+
+.download-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
 .pdf-preview {
+    flex: 1;
     width: 100%;
     height: 100%;
     border: none;
@@ -282,40 +330,6 @@ header {
     color: #ef4444;
     text-align: center;
     padding: 1rem;
-}
-
-.pdf-preview-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-    height: 100%;
-}
-
-.download-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background-color: var(--accent-color);
-    color: var(--text-color);
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.2s;
-    margin: 0.5rem;
-}
-
-.download-button:hover {
-    background-color: var(--accent-hover-color);
-}
-
-.download-icon {
-    width: 1.25rem;
-    height: 1.25rem;
 }
 
 /* Mobile Styles */
@@ -367,8 +381,8 @@ header {
         font-size: 0.6875rem;
     }
 
-    .pdf-preview {
-        min-height: 70vh;
+    .pdf-preview-wrapper {
+        height: calc(100vh - 4rem);
     }
     
     .download-button {
@@ -377,5 +391,14 @@ header {
         z-index: 10;
         margin: 0;
         border-radius: 0;
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        background-color: var(--accent-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .pdf-preview {
+        height: 100%;
     }
 } 

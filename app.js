@@ -165,27 +165,38 @@ async function showFilePreview(item) {
     previewContainer.innerHTML = '';
     
     if (extension === 'pdf') {
+        // Create a wrapper for the PDF viewer
         const previewWrapper = document.createElement('div');
         previewWrapper.className = 'pdf-preview-wrapper';
         
-        // Add download button for mobile
-        const downloadButton = document.createElement('a');
-        downloadButton.href = url;
-        downloadButton.download = item.name;
-        downloadButton.className = 'download-button';
-        downloadButton.innerHTML = `
-            <svg viewBox="0 0 20 20" fill="currentColor" class="download-icon">
-                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-            Download PDF
-        `;
+        // On mobile, use the browser's built-in PDF viewer
+        if (window.innerWidth <= 768) {
+            const pdfViewer = document.createElement('object');
+            pdfViewer.className = 'pdf-preview';
+            pdfViewer.type = 'application/pdf';
+            pdfViewer.data = url;
+            previewWrapper.appendChild(pdfViewer);
+        } else {
+            // On desktop, keep the iframe with download button
+            const downloadButton = document.createElement('a');
+            downloadButton.href = url;
+            downloadButton.download = item.name;
+            downloadButton.className = 'download-button';
+            downloadButton.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="download-icon">
+                    <path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Abrir PDF
+            `;
+            
+            const iframe = document.createElement('iframe');
+            iframe.className = 'pdf-preview';
+            iframe.src = url;
+            
+            previewWrapper.appendChild(downloadButton);
+            previewWrapper.appendChild(iframe);
+        }
         
-        const iframe = document.createElement('iframe');
-        iframe.className = 'pdf-preview';
-        iframe.src = url;
-        
-        previewWrapper.appendChild(downloadButton);
-        previewWrapper.appendChild(iframe);
         previewContainer.appendChild(previewWrapper);
     } else if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
         const img = document.createElement('img');
