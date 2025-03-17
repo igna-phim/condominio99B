@@ -172,12 +172,15 @@ async function showFilePreview(item) {
         // Create PDF viewer iframe
         const iframe = document.createElement('iframe');
         iframe.className = 'pdf-preview';
-        iframe.src = url;
+        
+        // Use direct file path instead of blob URL
+        iframe.src = `/documents/${item.path}`;
+        iframe.title = item.name;
         
         // Add download button only on mobile
         if (window.innerWidth <= 768) {
             const downloadButton = document.createElement('a');
-            downloadButton.href = url;
+            downloadButton.href = `/documents/${item.path}`;
             downloadButton.download = item.name;
             downloadButton.className = 'download-button';
             downloadButton.innerHTML = `

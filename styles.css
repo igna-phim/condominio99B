@@ -332,6 +332,10 @@ header {
     padding: 1rem;
 }
 
+.file-title {
+    display: none;
+}
+
 /* Mobile Styles */
 @media (max-width: 768px) {
     .menu-toggle {
@@ -400,5 +404,9 @@ header {
 
     .pdf-preview {
         height: 100%;
+    }
+
+    .file-title {
+        display: none;
     }
 } 
