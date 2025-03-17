@@ -173,24 +173,9 @@ async function showFilePreview(item) {
         const iframe = document.createElement('iframe');
         iframe.className = 'pdf-preview';
         
-        // Use direct file path instead of blob URL
+        // Use direct file path without encoding
         iframe.src = `/documents/${item.path}`;
         iframe.title = item.name;
-        
-        // Add download button only on mobile
-        if (window.innerWidth <= 768) {
-            const downloadButton = document.createElement('a');
-            downloadButton.href = `/documents/${item.path}`;
-            downloadButton.download = item.name;
-            downloadButton.className = 'download-button';
-            downloadButton.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="download-icon">
-                    <path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Abrir PDF
-            `;
-            previewWrapper.appendChild(downloadButton);
-        }
         
         previewWrapper.appendChild(iframe);
         previewContainer.appendChild(previewWrapper);
