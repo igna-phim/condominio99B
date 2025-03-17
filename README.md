@@ -1,7 +1,5 @@
 # Condominio 99-B File Viewer
 
-A simple file viewer application for managing and viewing documents in a condominium setting. Built with React and Express.
-
 ## Features
 
 - View PDF documents
@@ -46,14 +44,6 @@ npm run dev
 - `/public/documents` - Place your files here
 - `/src` - React application source code
 - `server.js` - Express backend server
-
-## Technologies Used
-
-- React
-- Vite
-- Express
-- Tailwind CSS
-- Node.js
 
 ## License
 
