@@ -164,6 +164,9 @@ async function showFilePreview(item) {
     // Clear previous preview
     previewContainer.innerHTML = '';
     
+    // Hide the no-file-selected div
+    document.querySelector('.no-file-selected')?.remove();
+    
     if (extension === 'pdf') {
         // Create wrapper for PDF viewer
         const previewWrapper = document.createElement('div');
@@ -199,6 +202,23 @@ async function showFilePreview(item) {
     }
 }
 
+// Function to ensure the no-file-selected message is properly displayed
+function ensureNoFileSelectedMessage() {
+    if (!previewContainer.querySelector('.no-file-selected')) {
+        const noFileDiv = document.createElement('div');
+        noFileDiv.className = 'no-file-selected';
+        noFileDiv.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <p>Nenhum ficheiro selecionado</p>
+            <p class="mobile-instruction">Clique no menu <span class="hamburger-hint">☰</span> no canto superior direito para ver os ficheiros disponíveis</p>
+            <p class="desktop-instruction">Selecione um ficheiro da lista à esquerda para visualizar</p>
+        `;
+        previewContainer.appendChild(noFileDiv);
+    }
+}
+
 // Load files from the documents folder
 async function loadFiles() {
     try {
@@ -220,6 +240,9 @@ async function loadFiles() {
         
         // Add the loaded class to hide the spinner
         fileList.classList.add('loaded');
+        
+        // Ensure no-file-selected message is displayed initially
+        ensureNoFileSelectedMessage();
     } catch (error) {
         console.error('Error loading files:', error);
         fileList.innerHTML = '<div class="error">Error loading files. Please try again later.</div>';
