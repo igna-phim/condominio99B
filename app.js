@@ -268,11 +268,24 @@ async function showFilePreview(item) {
     event.currentTarget.classList.add('active');
     
     const extension = getFileExtension(item.name);
+    
+    // Show loading animation before fetching file
+    previewContainer.innerHTML = `
+        <div class="preview-loading">
+            <div class="preview-loading-spinner"></div>
+            <p>Carregando ${item.name}...</p>
+        </div>
+    `;
+    
+    // Fetch file with slight delay to show loading animation
     const fileResponse = await fetch(`/documents/${item.path}`);
     const blob = await fileResponse.blob();
     const url = URL.createObjectURL(blob);
     
-    // Clear previous preview
+    // Small delay to show the loading animation
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Clear loading animation
     previewContainer.innerHTML = '';
     
     // Hide the no-file-selected div
@@ -306,6 +319,8 @@ async function showFilePreview(item) {
         const reader = new FileReader();
         reader.onload = (e) => {
             pre.textContent = e.target.result;
+            // Add a subtle fade-in animation
+            pre.style.animation = 'fadeIn 0.3s ease-in-out';
         };
         reader.readAsText(blob);
         
