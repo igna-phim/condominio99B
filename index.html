@@ -42,11 +42,45 @@
             
             <!-- Sidebar -->
             <div class="sidebar">
-                <h2>Ficheiros</h2>
-                <div id="file-list" class="file-list">
-                    <div class="spinner-container">
-                        <div class="spinner"></div>
-                        <p>A carregar ficheiros...</p>
+                <!-- News Section -->
+                <div class="sidebar-section">
+                    <div class="section-header" id="news-header">
+                        <h2>Notícias</h2>
+                        <button class="section-toggle" aria-label="Toggle news section">
+                            <svg viewBox="0 0 20 20" fill="currentColor" class="chevron-down">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="news-content" class="section-content">
+                        <div class="news-item">
+                            <p class="news-date">18 Mar 2024</p>
+                            <h3 class="news-title">Bem-vindo ao portal do condomínio!</h3>
+                            <p class="news-text">Este é o novo portal para consulta de documentos do condomínio. Aqui encontrará toda a documentação importante.</p>
+                        </div>
+                        <div class="news-item">
+                            <p class="news-date">17 Mar 2024</p>
+                            <h3 class="news-title">Limpeza das áreas comuns</h3>
+                            <p class="news-text">Informamos que a limpeza das áreas comuns será realizada na próxima semana, nos dias 22 e 23 de Março.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Files Section -->
+                <div class="sidebar-section">
+                    <div class="section-header" id="files-header">
+                        <h2>Ficheiros</h2>
+                        <button class="section-toggle" aria-label="Toggle files section">
+                            <svg viewBox="0 0 20 20" fill="currentColor" class="chevron-down">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="file-list" class="file-list section-content">
+                        <div class="spinner-container">
+                            <div class="spinner"></div>
+                            <p>A carregar ficheiros...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -61,6 +95,7 @@
                         <p>Nenhum ficheiro selecionado</p>
                         <p class="mobile-instruction">Clique no menu <span class="hamburger-hint">☰</span> no canto superior direito para ver os ficheiros disponíveis</p>
                         <p class="desktop-instruction">Selecione um ficheiro da lista à esquerda para visualizar</p>
+                        <a href="#" class="show-news-link">Ver notícias recentes</a>
                     </div>
                 </div>
             </div>

@@ -7,6 +7,86 @@ const sidebarOverlay = document.querySelector('.sidebar-overlay');
 const themeToggle = document.querySelector('.theme-toggle');
 const sunIcon = document.querySelector('.sun-icon');
 const moonIcon = document.querySelector('.moon-icon');
+const newsHeader = document.getElementById('news-header');
+const filesHeader = document.getElementById('files-header');
+const newsContent = document.getElementById('news-content');
+const newsToggle = newsHeader.querySelector('.section-toggle');
+const filesToggle = filesHeader.querySelector('.section-toggle');
+
+// Function to parse markdown to HTML
+function parseMarkdown(text) {
+    // Basic markdown parsing for common elements
+    let html = text
+        // Headers
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        // Bold
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        // Italic
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        // Links
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    
+    // Handle lists - check if there are any list items
+    if (html.match(/^\s*\* (.*$)/gm)) {
+        // Convert list items and wrap in <ul> tags
+        const listItems = html.match(/^\s*\* (.*$)/gm);
+        const listItemsHtml = listItems.map(item => `<li>${item.replace(/^\s*\* /, '')}</li>`).join('');
+        html = html.replace(/^\s*\* (.*$)/gm, '');
+        
+        // Find where to insert the list
+        const insertIndex = text.indexOf('* ');
+        if (insertIndex !== -1) {
+            const beforeList = html.substring(0, insertIndex);
+            const afterList = html.substring(insertIndex);
+            html = beforeList + `<ul>${listItemsHtml}</ul>` + afterList;
+        }
+    }
+    
+    // Line breaks
+    html = html.replace(/\n/g, '<br>');
+    
+    return html;
+}
+
+// News handling
+async function loadNews() {
+    try {
+        const response = await fetch('/api/news');
+        const newsData = await response.json();
+        
+        // Update sidebar news items
+        const sidebarNewsContent = document.getElementById('news-content');
+        sidebarNewsContent.innerHTML = newsData.map(news => `
+            <div class="news-item" data-news-id="${news.id}">
+                <p class="news-date">${news.date}</p>
+                <h1 class="news-title">${news.title}</h1>
+                <p class="news-text">${news.summary}</p>
+            </div>
+        `).join('');
+        
+        // Add click handlers for news items
+        const newsItems = document.querySelectorAll('.news-item');
+        newsItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const newsId = parseInt(item.dataset.newsId);
+                const selectedNews = newsData.find(n => n.id === newsId);
+                showNewsInContent(selectedNews);
+                
+                // Close sidebar on mobile after selecting news
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
+        });
+        
+        return newsData;
+    } catch (error) {
+        console.error('Error loading news:', error);
+        return [];
+    }
+}
 
 // Theme handling
 function setTheme(theme) {
@@ -54,6 +134,37 @@ sidebarOverlay.addEventListener('click', closeSidebar);
 if (window.innerWidth <= 768) {
     fileList.addEventListener('click', closeSidebar);
 }
+
+// Section toggle handling
+function toggleSection(toggleButton, sectionContent) {
+    toggleButton.classList.toggle('collapsed');
+    sectionContent.classList.toggle('collapsed');
+    
+    // Store the state in localStorage
+    const isCollapsed = sectionContent.classList.contains('collapsed');
+    const sectionId = sectionContent.id;
+    localStorage.setItem(`${sectionId}-collapsed`, isCollapsed.toString());
+}
+
+// Initialize section state from localStorage
+function initializeSectionState() {
+    const newsCollapsed = localStorage.getItem('news-content-collapsed') === 'true';
+    const filesCollapsed = localStorage.getItem('file-list-collapsed') === 'true';
+    
+    if (newsCollapsed) {
+        newsToggle.classList.add('collapsed');
+        newsContent.classList.add('collapsed');
+    }
+    
+    if (filesCollapsed) {
+        filesToggle.classList.add('collapsed');
+        fileList.classList.add('collapsed');
+    }
+}
+
+// Section toggle event listeners
+newsHeader.addEventListener('click', () => toggleSection(newsToggle, newsContent));
+filesHeader.addEventListener('click', () => toggleSection(filesToggle, fileList));
 
 // File handling functions
 function formatFileSize(bytes) {
@@ -202,6 +313,69 @@ async function showFilePreview(item) {
     }
 }
 
+// Function to show news feed in the content area
+function showNewsInContent(selectedNews = null) {
+    // Clear previous preview
+    previewContainer.innerHTML = '';
+    
+    // Create news container
+    const newsContainer = document.createElement('div');
+    newsContainer.className = 'news-container';
+    
+    // Create news header
+    const newsHeader = document.createElement('div');
+    newsHeader.className = 'news-container-header';
+    newsHeader.innerHTML = `
+        <h2>Notícias do Condomínio</h2>
+        <p class="news-subtitle">Informações e avisos importantes</p>
+    `;
+    
+    // Create news content
+    const newsItems = document.createElement('div');
+    newsItems.className = 'news-items';
+    
+    if (selectedNews) {
+        // Show single news item with markdown support
+        newsItems.innerHTML = `
+            <div class="news-content-item">
+                <div class="news-content-date">${selectedNews.date}</div>
+                <h3 class="news-content-title">${selectedNews.title}</h3>
+                <div class="news-content-text">
+                    ${selectedNews.content.map(paragraph => `<p>${parseMarkdown(paragraph)}</p>`).join('')}
+                </div>
+            </div>
+        `;
+    } else {
+        // Load all news items with markdown support
+        fetch('/api/news')
+            .then(response => response.json())
+            .then(newsData => {
+                newsItems.innerHTML = newsData.map(news => `
+                    <div class="news-content-item">
+                        <div class="news-content-date">${news.date}</div>
+                        <h3 class="news-content-title">${news.title}</h3>
+                        <div class="news-content-text">
+                            ${news.content.map(paragraph => `<p>${parseMarkdown(paragraph)}</p>`).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            })
+            .catch(error => {
+                console.error('Error loading news:', error);
+                newsItems.innerHTML = '<div class="error">Error loading news. Please try again later.</div>';
+            });
+    }
+    
+    newsContainer.appendChild(newsHeader);
+    newsContainer.appendChild(newsItems);
+    previewContainer.appendChild(newsContainer);
+    
+    // Remove active class from all file items
+    document.querySelectorAll('.file-item').forEach(item => {
+        item.classList.remove('active');
+    });
+}
+
 // Function to ensure the no-file-selected message is properly displayed
 function ensureNoFileSelectedMessage() {
     if (!previewContainer.querySelector('.no-file-selected')) {
@@ -215,6 +389,29 @@ function ensureNoFileSelectedMessage() {
             <p class="mobile-instruction">Clique no menu <span class="hamburger-hint">☰</span> no canto superior direito para ver os ficheiros disponíveis</p>
             <p class="desktop-instruction">Selecione um ficheiro da lista à esquerda para visualizar</p>
         `;
+        
+        // Add a link to show news 
+        const showNewsLink = document.createElement('a');
+        showNewsLink.href = '#';
+        showNewsLink.className = 'show-news-link';
+        showNewsLink.textContent = 'Ver notícias recentes';
+        showNewsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Open sidebar on mobile
+            if (window.innerWidth <= 768 && !sidebar.classList.contains('active')) {
+                toggleSidebar();
+            }
+            // Make sure news section is expanded
+            if (newsContent.classList.contains('collapsed')) {
+                toggleSection(newsToggle, newsContent);
+            }
+            // Show news in content area
+            showNewsInContent();
+            // Scroll to news section in sidebar
+            newsHeader.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        noFileDiv.appendChild(showNewsLink);
         previewContainer.appendChild(noFileDiv);
     }
 }
@@ -250,4 +447,28 @@ async function loadFiles() {
 }
 
 // Initialize the application
-loadFiles(); 
+document.addEventListener('DOMContentLoaded', () => {
+    initializeSectionState();
+    loadFiles();
+    loadNews();
+    
+    // Add event listener for the news link
+    const showNewsLink = document.querySelector('.show-news-link');
+    if (showNewsLink) {
+        showNewsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Open sidebar on mobile
+            if (window.innerWidth <= 768 && !sidebar.classList.contains('active')) {
+                toggleSidebar();
+            }
+            // Make sure news section is expanded
+            if (newsContent.classList.contains('collapsed')) {
+                toggleSection(newsToggle, newsContent);
+            }
+            // Show news in content area
+            showNewsInContent();
+            // Scroll to news section in sidebar
+            newsHeader.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+}); 

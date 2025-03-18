@@ -14,6 +14,18 @@ app.use(express.static(__dirname));
 // Serve documents folder
 app.use('/documents', express.static(join(__dirname, 'public/documents')));
 
+// Serve news.json file
+app.get('/api/news', (req, res) => {
+    const newsPath = join(__dirname, 'public/news.json');
+    try {
+        const newsData = fs.readFileSync(newsPath, 'utf8');
+        res.json(JSON.parse(newsData));
+    } catch (error) {
+        console.error('Error reading news data:', error);
+        res.status(500).json({ error: 'Failed to read news data' });
+    }
+});
+
 // Function to get file stats with type
 function getFileInfo(basePath, filePath) {
     const fullPath = join(basePath, filePath);

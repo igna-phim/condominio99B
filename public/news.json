@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "date": "18 Mar 2024",
+    "title": "Bem-vindo ao portal do condomínio!",
+    "summary": "Este é o novo portal para consulta de documentos do condomínio.",
+    "content": [
+      "Este é o novo portal para consulta de documentos do condomínio. Aqui encontrará **toda a documentação importante**.",
+      "## Informações importantes",
+      "* Documentos são atualizados regularmente",
+      "* Mantenha-se atento às notificações",
+      "Fique atento às atualizações e *novos documentos* que serão adicionados regularmente."
+    ]
+  }
+] 

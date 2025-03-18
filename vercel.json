@@ -12,6 +12,10 @@
   ],
   "routes": [
     {
+      "src": "/api/news",
+      "dest": "server.js"
+    },
+    {
       "src": "/documents",
       "dest": "server.js"
     },
