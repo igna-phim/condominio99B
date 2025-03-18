@@ -202,16 +202,24 @@ async function showFilePreview(item) {
 // Load files from the documents folder
 async function loadFiles() {
     try {
+        // Remove the loaded class to show the spinner
+        fileList.classList.remove('loaded');
+        
         const response = await fetch('/documents');
         const items = await response.json();
         
-        // Clear file list
+        // Clear existing file elements but keep the spinner
+        const spinner = fileList.querySelector('.spinner-container');
         fileList.innerHTML = '';
+        fileList.appendChild(spinner);
         
         // Create file elements
         items.forEach(item => {
             fileList.appendChild(createFileElement(item));
         });
+        
+        // Add the loaded class to hide the spinner
+        fileList.classList.add('loaded');
     } catch (error) {
         console.error('Error loading files:', error);
         fileList.innerHTML = '<div class="error">Error loading files. Please try again later.</div>';
