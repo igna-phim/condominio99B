@@ -8,6 +8,9 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
+// Parse JSON request body
+app.use(express.json());
+
 // Serve static files
 app.use(express.static(__dirname));
 
@@ -94,7 +97,7 @@ app.get('/documents', (req, res) => {
 
 // For local development
 if (process.env.NODE_ENV !== 'production') {
-    const PORT = 3000;
+    const PORT = 3001;
     app.listen(PORT, () => {
         console.log(`Server running at http://localhost:${PORT}`);
     });
