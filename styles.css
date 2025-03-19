@@ -69,11 +69,13 @@ header:hover {
     font-size: 1.5rem;
     font-weight: bold;
     color: var(--text-primary);
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, color 0.2s ease;
+    cursor: pointer;
 }
 
 .title:hover {
     transform: scale(1.05);
+    color: var(--accent-color);
 }
 
 .header-controls {
@@ -1004,4 +1006,36 @@ pre:hover, code:hover {
 
 code:hover {
     background-color: var(--hover-color);
+}
+
+/* Initial loading spinner */
+.loading-initial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.loading-initial .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 10px;
+}
+
+[data-theme="dark"] .loading-initial .spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-top-color: var(--primary-color);
+}
+
+/* Hide initial loading when content is loaded */
+.news-container + .loading-initial {
+    display: none;
 } 

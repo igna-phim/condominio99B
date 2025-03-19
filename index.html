@@ -70,14 +70,10 @@
             <!-- Content Area -->
             <div class="content">
                 <div id="preview-container" class="preview-container">
-                    <div class="no-file-selected">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
-                            <path d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                        <p>Nenhum ficheiro selecionado</p>
-                        <p class="mobile-instruction">Clique no menu <span class="hamburger-hint">☰</span> no canto superior direito para ver os ficheiros disponíveis</p>
-                        <p class="desktop-instruction">Selecione um ficheiro da lista à esquerda para visualizar</p>
-                        <a href="#" class="show-news-link">Ver notícias recentes</a>
+                    <!-- Loading spinner for initial content load -->
+                    <div class="loading-initial">
+                        <div class="spinner"></div>
+                        <p>A carregar conteúdo...</p>
                     </div>
                 </div>
             </div>

@@ -385,6 +385,12 @@ function showNewsInContent(selectedNews = null) {
     newsContainer.appendChild(newsItems);
     previewContainer.appendChild(newsContainer);
     
+    // Remove loading-initial element if it exists
+    const loadingElement = document.querySelector('.loading-initial');
+    if (loadingElement) {
+        loadingElement.remove();
+    }
+    
     // Remove active class from all file items
     document.querySelectorAll('.file-item').forEach(item => {
         item.classList.remove('active');
@@ -453,8 +459,8 @@ async function loadFiles() {
         // Add the loaded class to hide the spinner
         fileList.classList.add('loaded');
         
-        // Ensure no-file-selected message is displayed initially
-        ensureNoFileSelectedMessage();
+        // Comment out: No longer needed since we show news by default
+        // ensureNoFileSelectedMessage();
     } catch (error) {
         console.error('Error loading files:', error);
         fileList.innerHTML = '<div class="error">Error loading files. Please try again later.</div>';
@@ -465,7 +471,19 @@ async function loadFiles() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeSectionState();
     loadFiles();
-    loadNews();
+    loadNews().then(() => {
+        // Show news container as default content on page load
+        showNewsInContent();
+    });
+    
+    // Add click handler to the page title
+    const pageTitle = document.querySelector('.title');
+    if (pageTitle) {
+        pageTitle.style.cursor = 'pointer';
+        pageTitle.addEventListener('click', () => {
+            showNewsInContent();
+        });
+    }
     
     // Add event listener for the news link
     const showNewsLink = document.querySelector('.show-news-link');
