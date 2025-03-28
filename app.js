@@ -272,7 +272,7 @@ async function showFilePreview(item) {
     // Show loading animation before fetching file
     previewContainer.innerHTML = `
         <div class="preview-loading">
-            <div class="preview-loading-spinner"></div>
+            <div class="spinner"></div>
             <p>Carregando ${item.name}...</p>
         </div>
     `;
